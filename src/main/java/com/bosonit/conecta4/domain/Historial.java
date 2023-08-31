@@ -1,20 +1,19 @@
 package com.bosonit.conecta4.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Invitacion {
+public class Historial {
 
-    private Integer idInvitacion;
-    private String nombreJugador1;
-    private String ipCliente1;
+    @Id
+    private String ipJugador;
+    private int[] historialPartidas;
 
 }

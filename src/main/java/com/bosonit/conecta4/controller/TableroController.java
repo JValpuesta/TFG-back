@@ -24,13 +24,28 @@ public class TableroController {
     }
 
     @PostMapping
-    public Mono<Tablero> addTablero(@RequestBody Tablero tablero){
+    public Mono<Tablero> addTablero1(@RequestBody Tablero tablero){
         return tableroRepository.save(tablero);
+    }
+
+    @PostMapping
+    public Mono<Tablero> addTablero(@RequestParam String nombre, @RequestParam String ip){
+        return tableroRepository.save(new Tablero(nombre, ip));
     }
 
     @DeleteMapping("/{id}")
     public Mono<Void> deleteTableroById(@PathVariable int id ){
         return tableroRepository.deleteById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Mono<Integer> addJugador2Tablero(@RequestParam String nombre2, @RequestParam String ip2) {
+        return null;
+    }
+
+    @PutMapping("/{id}")
+    public Mono<Integer> addFichaTablero(@RequestBody int columna) {
+        return null;
     }
 
 }
