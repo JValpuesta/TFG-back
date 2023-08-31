@@ -3,7 +3,7 @@ import Stomp from 'stompjs';
 
 // Creamos una instancia de SockJS y Stomp
 
-const socket = new SockJS('http://localhost:8080/ws');
+const socket = new SockJS('http://localhost:4200/ws');
 const stompClient = Stomp.over(socket);
 
 // Nos conectamos al servidor WebSocket
