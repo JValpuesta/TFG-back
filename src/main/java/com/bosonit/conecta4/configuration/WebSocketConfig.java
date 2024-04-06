@@ -1,5 +1,4 @@
-package com.bosonit.conecta4;
-
+package com.bosonit.conecta4.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -13,14 +12,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/conecta4");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/topic"); // Habilita el uso de "/topic" como prefijo para las salidas
+        registry.setApplicationDestinationPrefixes("/app"); // Habilita el uso de "/app" como prefijo para las solicitudes entrantes
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:4200").withSockJS();
+        registry.addEndpoint("ws").setAllowedOrigins("http://localhost:4200/", "http://localhost:4200", "http://localhost:4201/", "http://localhost:4201").withSockJS(); // Habilita el punto final WebSocket en "/ws"
     }
-
 }
-
