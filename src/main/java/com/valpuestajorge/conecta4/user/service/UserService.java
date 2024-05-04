@@ -12,7 +12,5 @@ public interface UserService {
 
     Mono<AppUser> getByLogin(String login) throws NotFoundException;
 
-
-    @Transactional(rollbackFor = Exception.class)
     Mono<AppUser> post(AppUser entity) throws UnprocessableEntityException, NotFoundException;
 }

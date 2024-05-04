@@ -61,25 +61,25 @@ public class InternalJWTSecurityService implements ISecurityService {
         if (Objects.nonNull(appUser)) {
             if (Boolean.FALSE.equals(appUser.getAccountNotLocked())) {
                 Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("appUser.lockedAccount.message", null, locale);
+                String message = messageSource.getMessage("user.lockedAccount.message", null, locale);
                 updateUserLoginData(appUser, LocalDateTime.now(), message);
                 return null;
             }
             if (Boolean.FALSE.equals(appUser.getAccountNotExpired())) {
                 Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("appUser.expiredAccount.message", null, locale);
+                String message = messageSource.getMessage("user.expiredAccount.message", null, locale);
                 updateUserLoginData(appUser, LocalDateTime.now(), message);
                 return null;
             }
             if (Boolean.FALSE.equals(appUser.getCredentialNotExpired())) {
                 Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("appUser.expiredCredential.message", null, locale);
+                String message = messageSource.getMessage("user.expiredCredential.message", null, locale);
                 updateUserLoginData(appUser, LocalDateTime.now(), message);
                 return null;
             }
             if (Boolean.TRUE.equals(appUser.getRequiredPasswordChangeFlag())) {
                 Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("appUser.requiredPasswordChange.message", null, locale);
+                String message = messageSource.getMessage("user.requiredPasswordChange.message", null, locale);
                 updateUserLoginData(appUser, LocalDateTime.now(), message);
                 return null;
             }
@@ -90,7 +90,7 @@ public class InternalJWTSecurityService implements ISecurityService {
                 return new UsernamePasswordAuthenticationToken(username, password, authorities);
             } else {
                 Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("appUser.unsuccessfulPassword.message", null, locale);
+                String message = messageSource.getMessage("user.unsuccessfulPassword.message", null, locale);
                 updateUserLoginData(appUser, LocalDateTime.now(), message);
             }
         }
@@ -108,7 +108,7 @@ public class InternalJWTSecurityService implements ISecurityService {
         AppUser appUser = userRepository.findUserByUsername(changePasswordDto.getUserName()).block();
         if (Objects.isNull(appUser)) {
             Locale locale = LocaleContextHolder.getLocale();
-            String message = messageSource.getMessage("appUser.notFound.login.message", null, locale);
+            String message = messageSource.getMessage("user.notFound.login.message", null, locale);
             throw new NotFoundException(message);
         }
         if (Boolean.TRUE.equals(appUser.getRequiredPasswordChangeFlag())) {
@@ -118,7 +118,7 @@ public class InternalJWTSecurityService implements ISecurityService {
             }
         } else if (Objects.isNull(authenticate(changePasswordDto.getUserName(), changePasswordDto.getPreviousPassword()))) {
             Locale locale = LocaleContextHolder.getLocale();
-            String message = messageSource.getMessage("appUser.unsuccessfulPassword.message", null, locale);
+            String message = messageSource.getMessage("user.unsuccessfulPassword.message", null, locale);
             throw new InvalidLoginException(message);
         }
         appUser.setPassword(passwordEncoder.cypherPassword(changePasswordDto.getUserName(), changePasswordDto.getNewPassword()));
@@ -169,7 +169,7 @@ public class InternalJWTSecurityService implements ISecurityService {
         AppUser appUser = userRepository.findUserByUsername(username).block();
         if (Objects.isNull(appUser)) {
             Locale locale = LocaleContextHolder.getLocale();
-            String message = messageSource.getMessage("appUser.notFound.login.message", null, locale);
+            String message = messageSource.getMessage("user.notFound.login.message", null, locale);
             throw new NotFoundException(message);
         }
         appUser.setAccountNotLocked(isAvailable);

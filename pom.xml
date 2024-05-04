@@ -14,6 +14,7 @@
     <name>conecta4</name>
     <description>Demo project for Spring Boot</description>
     <properties>
+        <liquibase.propertyFile>${project.basedir}/src/main/resources/liquibase.properties</liquibase.propertyFile>
         <java.version>17</java.version>
     </properties>
     <dependencies>
@@ -68,9 +69,20 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <version>0.8.5.RELEASE</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -167,6 +179,26 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.10.0</version>
+                <configuration>
+                    <propertyFile>${liquibase.propertyFile}</propertyFile>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate.orm</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                        <version>6.2.5.Final</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
