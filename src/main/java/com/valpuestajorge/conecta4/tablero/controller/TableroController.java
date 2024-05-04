@@ -6,6 +6,8 @@ import com.valpuestajorge.conecta4.tablero.service.TableroService;
 import com.valpuestajorge.conecta4.historial.business.Historial;
 import com.valpuestajorge.conecta4.movimiento.business.Movimiento;
 import com.valpuestajorge.conecta4.tablero.business.Tablero;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,9 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
+@Tag(name = "Tablero", description = "Tablero operations")
 @RequestMapping("/partida")
+@SecurityRequirement(name = "Bearer Authentication")
 public class TableroController {
 
     @Autowired
