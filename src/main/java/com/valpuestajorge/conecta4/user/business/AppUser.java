@@ -1,7 +1,8 @@
 package com.valpuestajorge.conecta4.user.business;
 
-import com.valpuestajorge.conecta4.user.util.NationalityEnum;
-import com.valpuestajorge.conecta4.user.util.UserRolesEnum;
+import com.valpuestajorge.conecta4.shared.restapibusiness.persistance.BusinessEntity;
+import com.valpuestajorge.conecta4.shared.util.NationalityEnum;
+import com.valpuestajorge.conecta4.shared.util.UserRolesEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,10 +18,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUser {
+public class AppUser extends BusinessEntity {
 
-    @Id
-    private Integer id;
     @Column
     private String email;
     @Column
@@ -31,8 +30,6 @@ public class AppUser {
     private String password;
     @Column
     private LocalDateTime lastLogin;
-    @Column
-    private LocalDateTime dateOfRegistration;
     @Column
     private Boolean userAvailableFlag;
     @Column

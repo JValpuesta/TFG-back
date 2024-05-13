@@ -24,22 +24,20 @@ import reactor.core.publisher.Mono;
 public class SecurityModuleController {
 
     private final ISecurityService securityService;
-    //private final UserOutputDtoMapper outputMapper;
-    //private final UserInputDtoMapper inputMapper;
+    //private final AppUserOutputDtoMapper outputMapper;
+    //private final AppUserInputDtoMapper inputMapper;
 
-    @PostMapping("/login/")
-    public ResponseEntity<LoginOutputDto> login(@RequestBody LoginDto loginDto) throws NotFoundException, UnprocessableEntityException {
-        LoginOutputDto result = securityService.login(loginDto.username(), loginDto.password());
-        if (result.status().equals(HttpStatus.OK)) {
-            return ResponseEntity.ok(result);
-        } else if (result.status().equals(HttpStatus.BAD_REQUEST)) {
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        } else if (result.status().equals(HttpStatus.UNAUTHORIZED)) {
-            return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+    @PostMapping("/login")
+    public Mono<ResponseEntity<LoginOutputDto>> login(@RequestBody LoginDto loginDto) {
+        return securityService.login(loginDto.username(), loginDto.password())
+                .map(result -> {
+                    HttpStatus status = (HttpStatus) result.status();
+                    if (status == HttpStatus.OK) {
+                        return ResponseEntity.ok(result);
+                    } else {
+                        return ResponseEntity.status(status).body(result);
+                    }
+                });
     }
 
     @SecurityRequirement(name = "Bearer Authentication")

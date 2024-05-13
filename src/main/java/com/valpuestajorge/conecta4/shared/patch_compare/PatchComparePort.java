@@ -1,4 +1,4 @@
-package com.valpuestajorge.conecta4.shared;
+package com.valpuestajorge.conecta4.shared.patch_compare;
 
 
 import com.valpuestajorge.conecta4.errors.NotFoundException;

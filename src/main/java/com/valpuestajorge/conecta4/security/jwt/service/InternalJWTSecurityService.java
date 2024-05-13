@@ -44,86 +44,85 @@ public class InternalJWTSecurityService implements ISecurityService {
     }
 
     @Override
-    public LoginOutputDto login(String username, String password) throws NotFoundException, UnprocessableEntityException {
-        Authentication auth = this.authenticate(username, password);
-        if (Objects.nonNull(auth)) {
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            return jwtUtils.getToken(auth);
-        } else {
-            Locale locale = LocaleContextHolder.getLocale();
-            String message = messageSource.getMessage("user.unsuccessfulLogin.message", null, locale);
-            return new LoginOutputDto("", "", "", "", "", HttpStatus.UNAUTHORIZED, message);
-        }
+    public Mono<LoginOutputDto> login(String username, String password) {
+        return authenticate(username, password)
+                .flatMap(auth -> {
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    return Mono.just(jwtUtils.getToken(auth));
+                })
+                .switchIfEmpty(Mono.defer(() -> {
+                    Locale locale = LocaleContextHolder.getLocale();
+                    String message = messageSource.getMessage("user.unsuccessfulLogin.message", null, locale);
+                    return Mono.just(new LoginOutputDto("", "", "", "", "", HttpStatus.UNAUTHORIZED, message));
+                }));
     }
 
-    private Authentication authenticate(String username, String password) {
-        AppUser appUser = userRepository.findUserByUsername(username).block();
-        if (Objects.nonNull(appUser)) {
-            if (Boolean.FALSE.equals(appUser.getAccountNotLocked())) {
-                Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("user.lockedAccount.message", null, locale);
-                updateUserLoginData(appUser, LocalDateTime.now(), message);
-                return null;
-            }
-            if (Boolean.FALSE.equals(appUser.getAccountNotExpired())) {
-                Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("user.expiredAccount.message", null, locale);
-                updateUserLoginData(appUser, LocalDateTime.now(), message);
-                return null;
-            }
-            if (Boolean.FALSE.equals(appUser.getCredentialNotExpired())) {
-                Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("user.expiredCredential.message", null, locale);
-                updateUserLoginData(appUser, LocalDateTime.now(), message);
-                return null;
-            }
-            if (Boolean.TRUE.equals(appUser.getRequiredPasswordChangeFlag())) {
-                Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("user.requiredPasswordChange.message", null, locale);
-                updateUserLoginData(appUser, LocalDateTime.now(), message);
-                return null;
-            }
-            if (passwordEncoder.matches(HashUtils.getHash(password + "_" + username), appUser.getPassword())) {
-                String stringAuthorities = "ROLE_" + appUser.getUserRole();
-                Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
-                updateUserLoginData(appUser, LocalDateTime.now(), null);
-                return new UsernamePasswordAuthenticationToken(username, password, authorities);
-            } else {
-                Locale locale = LocaleContextHolder.getLocale();
-                String message = messageSource.getMessage("user.unsuccessfulPassword.message", null, locale);
-                updateUserLoginData(appUser, LocalDateTime.now(), message);
-            }
-        }
-        return null;
+    public Mono<Authentication> authenticate(String username, String password) {
+        return userRepository.findUserByUsername(username)
+                .flatMap(appUser -> {
+                    if (Objects.isNull(appUser)) {
+                        return Mono.empty();
+                    }
+                    if (Boolean.FALSE.equals(appUser.getAccountNotLocked())) {
+                        return createAndLogFailure(appUser, "user.lockedAccount.message");
+                    }
+                    if (Boolean.FALSE.equals(appUser.getAccountNotExpired())) {
+                        return createAndLogFailure(appUser, "user.expiredAccount.message");
+                    }
+                    if (Boolean.FALSE.equals(appUser.getCredentialNotExpired())) {
+                        return createAndLogFailure(appUser, "user.expiredCredential.message");
+                    }
+                    if (Boolean.TRUE.equals(appUser.getRequiredPasswordChangeFlag())) {
+                        return createAndLogFailure(appUser, "user.requiredPasswordChange.message");
+                    }
+                    if (passwordEncoder.matches(HashUtils.getHash(password + "_" + username), appUser.getPassword())) {
+                        String stringAuthorities = "ROLE_" + appUser.getUserRole();
+                        Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
+                        updateUserLoginData(appUser, null, null);
+                        return Mono.just(new UsernamePasswordAuthenticationToken(username, password, authorities));
+                    } else {
+                        return createAndLogFailure(appUser, "user.unsuccessfulPassword.message");
+                    }
+                });
     }
 
-    private void updateUserLoginData(AppUser appUser, LocalDateTime lastLogin, String motiveFailedLogin) {
+    private Mono<Authentication> createAndLogFailure(AppUser appUser, String messageCode) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(messageCode, null, locale);
+        updateUserLoginData(appUser, null, message);
+        return Mono.empty();
+    }
+
+    public Mono<Void> updateUserLoginData(AppUser appUser, LocalDateTime lastLogin, String motiveFailedLogin) {
         appUser.setLastLogin(lastLogin);
         appUser.setMotiveFailedLogin(motiveFailedLogin);
-        userRepository.save(appUser);
+        return userRepository.save(appUser).then();
     }
 
     @Override
-    public void changePassword(ChangePasswordDto changePasswordDto) throws InvalidLoginException, NotFoundException, UnprocessableEntityException {
-        AppUser appUser = userRepository.findUserByUsername(changePasswordDto.getUserName()).block();
-        if (Objects.isNull(appUser)) {
-            Locale locale = LocaleContextHolder.getLocale();
-            String message = messageSource.getMessage("user.notFound.login.message", null, locale);
-            throw new NotFoundException(message);
-        }
-        if (Boolean.TRUE.equals(appUser.getRequiredPasswordChangeFlag())) {
-            if (changePasswordDto.getPreviousPassword().equals(appUser.getTemporaryPassword())) {
-                appUser.setRequiredPasswordChangeFlag(false);
-                appUser.setTemporaryPassword(null);
-            }
-        } else if (Objects.isNull(authenticate(changePasswordDto.getUserName(), changePasswordDto.getPreviousPassword()))) {
-            Locale locale = LocaleContextHolder.getLocale();
-            String message = messageSource.getMessage("user.unsuccessfulPassword.message", null, locale);
-            throw new InvalidLoginException(message);
-        }
-        appUser.setPassword(passwordEncoder.cypherPassword(changePasswordDto.getUserName(), changePasswordDto.getNewPassword()));
-        userRepository.save(appUser);
+    public Mono<Void> changePassword(ChangePasswordDto changePasswordDto) {
+        return userRepository.findUserByUsername(changePasswordDto.getUserName())
+                .flatMap(appUser -> {
+                    if (Objects.isNull(appUser)) {
+                        Locale locale = LocaleContextHolder.getLocale();
+                        String message = messageSource.getMessage("user.notFound.login.message", null, locale);
+                        return Mono.error(new NotFoundException(message));
+                    }
 
+                    if (Boolean.TRUE.equals(appUser.getRequiredPasswordChangeFlag())) {
+                        if (changePasswordDto.getPreviousPassword().equals(appUser.getTemporaryPassword())) {
+                            appUser.setRequiredPasswordChangeFlag(false);
+                            appUser.setTemporaryPassword(null);
+                        }
+                    } else if (Objects.isNull(authenticate(changePasswordDto.getUserName(), changePasswordDto.getPreviousPassword()))) {
+                        Locale locale = LocaleContextHolder.getLocale();
+                        String message = messageSource.getMessage("user.unsuccessfulPassword.message", null, locale);
+                        return Mono.error(new InvalidLoginException(message));
+                    }
+
+                    appUser.setPassword(passwordEncoder.cypherPassword(changePasswordDto.getUserName(), changePasswordDto.getNewPassword()));
+                    return userRepository.save(appUser).then();
+                });
     }
 
     @Override
@@ -132,19 +131,22 @@ public class InternalJWTSecurityService implements ISecurityService {
     }
 
     @Override
-    public void setRandomPassword(String username) {
+    public Mono<Void> setRandomPassword(String username) {
         String temporaryPassword = PasswordGenerator.generateRandomPassword(12);
-        setUserTemporaryPassword(username, temporaryPassword);
+        return setUserTemporaryPassword(username, temporaryPassword);
     }
 
-    private void setUserTemporaryPassword(String userName, String temporaryPassword) {
-        AppUser satAppUser = userRepository.findUserByUsername(userName).block();
-        if(Objects.nonNull(satAppUser)){
-            satAppUser.setTemporaryPassword(temporaryPassword);
-            satAppUser.setRequiredPasswordChangeFlag(true);
-            userRepository.save(satAppUser);
-        }
-        //sendEmail(satAppUser.getEmail(), temporaryPassword);
+    private Mono<Void> setUserTemporaryPassword(String userName, String temporaryPassword) {
+        return userRepository.findUserByUsername(userName)
+                .flatMap(user -> {
+                    if (Objects.nonNull(user)) {
+                        user.setTemporaryPassword(temporaryPassword);
+                        user.setRequiredPasswordChangeFlag(true);
+                        return userRepository.save(user).then();
+                    } else {
+                        return Mono.empty();
+                    }
+                });
     }
 
     /*private void sendEmail(String email, String temporaryPassword) {
@@ -165,15 +167,17 @@ public class InternalJWTSecurityService implements ISecurityService {
     }*/
 
     @Override
-    public void updateUserAvailability(String username, Boolean isAvailable) throws NotFoundException, UnprocessableEntityException {
-        AppUser appUser = userRepository.findUserByUsername(username).block();
-        if (Objects.isNull(appUser)) {
-            Locale locale = LocaleContextHolder.getLocale();
-            String message = messageSource.getMessage("user.notFound.login.message", null, locale);
-            throw new NotFoundException(message);
-        }
-        appUser.setAccountNotLocked(isAvailable);
-        userRepository.save(appUser);
+    public Mono<Void> updateUserAvailability(String username, Boolean isAvailable) {
+        return userRepository.findUserByUsername(username)
+                .flatMap(user -> {
+                    if (Objects.isNull(user)) {
+                        Locale locale = LocaleContextHolder.getLocale();
+                        String message = messageSource.getMessage("user.notFound.login.message", null, locale);
+                        return Mono.error(new NotFoundException(message));
+                    }
+                    user.setAccountNotLocked(isAvailable);
+                    return userRepository.save(user).then();
+                });
     }
 
 }

@@ -1,6 +1,6 @@
 package com.valpuestajorge.conecta4.user.dto;
 
-import com.valpuestajorge.conecta4.shared.generic_mappers.GenericInputMapper;
+import com.valpuestajorge.conecta4.shared.restapibusiness.dto.in.BusinessInputDtoMapper;
 import com.valpuestajorge.conecta4.user.business.AppUser;
 import org.mapstruct.Mapper;
 
@@ -8,5 +8,5 @@ import org.mapstruct.Mapper;
         uses = {
         }
 )
-public abstract class UserInputDtoMapper implements GenericInputMapper<AppUser, UserInputDto> {
+public abstract class AppUserInputDtoMapper extends BusinessInputDtoMapper<AppUser, AppUserInputDto> {
 }

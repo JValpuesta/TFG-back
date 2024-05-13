@@ -1,4 +1,4 @@
-package com.valpuestajorge.conecta4.user.util;
+package com.valpuestajorge.conecta4.shared.util;
 
 public enum UserRolesEnum {
     ADMIN("admin"),

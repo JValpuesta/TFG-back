@@ -169,10 +169,21 @@
             <artifactId>liquibase-core</artifactId>
             <version>4.9.1</version>
         </dependency>
-        <!--Mappers-->
+        <!-- MappedSuperclass -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>jakarta.persistence</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <!-- Mapping -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
+            <version>1.5.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
             <version>1.5.5.Final</version>
         </dependency>
     </dependencies>

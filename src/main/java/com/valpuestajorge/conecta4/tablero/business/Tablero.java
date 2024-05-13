@@ -83,11 +83,11 @@ public class Tablero {
         int cols = this.posicion[0].length;
 
         // Verificación de filas
-        for (int row = 0; row < rows; row++) {
+        for (int[] ints : this.posicion) {
             for (int col = 0; col < cols - 3; col++) {
                 boolean hasConnect4 = true;
                 for (int i = 0; i < 4; i++) {
-                    if (this.posicion[row][col + i] != turno) {
+                    if (ints[col + i] != turno) {
                         hasConnect4 = false;
                         break;
                     }

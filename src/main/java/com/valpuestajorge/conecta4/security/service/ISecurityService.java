@@ -11,11 +11,11 @@ import reactor.core.publisher.Mono;
 public interface ISecurityService {
 
     Mono<AppUser> searchUserByUsername(String username);
-    LoginOutputDto login(String username, String password) throws NotFoundException, UnprocessableEntityException;
-    void changePassword(ChangePasswordDto changePasswordDto) throws InvalidLoginException, NotFoundException, UnprocessableEntityException;
+    Mono<LoginOutputDto> login(String username, String password) throws NotFoundException, UnprocessableEntityException;
+    Mono<Void> changePassword(ChangePasswordDto changePasswordDto) throws InvalidLoginException, NotFoundException, UnprocessableEntityException;
     void lostPassword(String username) throws NotFoundException, UnprocessableEntityException;
-    void setRandomPassword(String user) throws NotFoundException, UnprocessableEntityException;
-    void updateUserAvailability(String user, Boolean isAvailable) throws NotFoundException, UnprocessableEntityException;
+    Mono<Void> setRandomPassword(String user) throws NotFoundException, UnprocessableEntityException;
+    Mono<Void> updateUserAvailability(String user, Boolean isAvailable) throws NotFoundException, UnprocessableEntityException;
 }
 
 
