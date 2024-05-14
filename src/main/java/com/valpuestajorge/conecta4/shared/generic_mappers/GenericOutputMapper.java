@@ -14,5 +14,5 @@ import java.util.Set;
 public interface GenericOutputMapper<E1, E2> {
     E2 toSecond(E1 domain);
     List<E2> toSecondList(List<E1> domain);
-    Page<E2> toSecond(Page<E1> domain);
+    //Page<E2> toSecond(Page<E1> domain);
 }

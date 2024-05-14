@@ -63,4 +63,12 @@ public class OpenAPI30Configuration {
                 .packagesToScan("com.valpuestajorge.conecta4.security")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi user() {
+        return GroupedOpenApi.builder()
+                .group("User")
+                .packagesToScan("com.valpuestajorge.conecta4.user")
+                .build();
+    }
 }

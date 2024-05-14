@@ -108,7 +108,7 @@ public abstract class BusinessController<B extends BusinessEntity, O extends Bus
         return getService().delete(id).thenReturn(deleteMessage + id);
     }
 
-    @GetMapping
+    /*@GetMapping
     public Mono<ResponseEntity<Page<O>>> getAllBusinesses(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -116,5 +116,5 @@ public abstract class BusinessController<B extends BusinessEntity, O extends Bus
                 .map(getOutputMapper()::toSecond)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.noContent().build());
-    }
+    }*/
 }

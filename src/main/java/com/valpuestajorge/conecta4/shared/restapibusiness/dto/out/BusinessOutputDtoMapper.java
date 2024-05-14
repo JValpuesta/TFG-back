@@ -19,6 +19,6 @@ public abstract class BusinessOutputDtoMapper<B extends BusinessEntity, O extend
 
     public abstract List<O> toListOutput(List<B> business);
 
-    public abstract Page<O> toPageOutput(Page<B> business);
+
 
 }
