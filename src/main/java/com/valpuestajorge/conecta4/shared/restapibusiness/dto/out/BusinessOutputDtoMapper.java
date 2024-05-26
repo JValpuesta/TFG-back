@@ -1,8 +1,7 @@
 package com.valpuestajorge.conecta4.shared.restapibusiness.dto.out;
 
 import com.valpuestajorge.conecta4.shared.generic_mappers.GenericOutputMapper;
-import com.valpuestajorge.conecta4.shared.restapibusiness.persistance.BusinessEntity;
-import org.springframework.data.domain.Page;
+import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
 
 import java.util.List;
 import java.util.Objects;

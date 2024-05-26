@@ -30,20 +30,23 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JWTUtils jwtUtils;
 
-    private final String[] publicPaths = {"/v3/api-docs/**","/swagger-ui/**", "/swagger-ui.html", "/security/user/login/**", "/security/user/certs/**", "/actuator/**", "/v1/company/logo"};
+    private final String[] publicPaths
+            = {"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/security/user/login/**", "/v1/user",
+            "/security/user/certs/**", "/actuator/**", "/v1/company/logo"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session-> {
+                .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                     session.sessionFixation().migrateSession();
                 })
-                .authorizeHttpRequests(http-> {
+                .authorizeHttpRequests(http -> {
                     http.requestMatchers(publicPaths).permitAll();
                     http.anyRequest().authenticated();
                 })
@@ -55,7 +58,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PATCH", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -68,14 +71,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsServiceImpl userDetailsService){
-        DaoAuthenticationProvider provider= new DaoAuthenticationProvider();
+    public AuthenticationProvider authenticationProvider(UserDetailsServiceImpl userDetailsService) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
         return provider;
     }
+
     @Bean
-    public PasswordEncoderWrapper passwordEncoder(){
+    public PasswordEncoderWrapper passwordEncoder() {
         return new BCryptPasswordEncoderWrapper();
     }
 

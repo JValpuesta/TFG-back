@@ -1,4 +1,4 @@
-package com.valpuestajorge.conecta4.shared.restapibusiness.persistance;
+package com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

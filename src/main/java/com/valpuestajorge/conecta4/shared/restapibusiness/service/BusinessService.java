@@ -3,7 +3,7 @@ package com.valpuestajorge.conecta4.shared.restapibusiness.service;
 import com.valpuestajorge.conecta4.errors.NotFoundException;
 import com.valpuestajorge.conecta4.errors.UnprocessableEntityException;
 import com.valpuestajorge.conecta4.shared.patch_compare.PatchComparePort;
-import com.valpuestajorge.conecta4.shared.restapibusiness.persistance.BusinessEntity;
+import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
 import com.valpuestajorge.conecta4.shared.restapibusiness.repository.BusinessReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,8 +27,12 @@ public abstract class BusinessService<B extends BusinessEntity> implements Busin
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Mono<B> post(B entity) throws UnprocessableEntityException, NotFoundException {
+        B beforePost = beforePost(entity);
+        return getRepo().save(beforePost);
+    }
 
-        return getRepo().save(entity);
+    protected B beforePost(B domain) {
+        return domain;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.valpuestajorge.conecta4.security.jwt.service;
 
 import com.valpuestajorge.conecta4.errors.NotFoundException;
-import com.valpuestajorge.conecta4.errors.UnprocessableEntityException;
 import com.valpuestajorge.conecta4.security.encoder.HashUtils;
 import com.valpuestajorge.conecta4.security.encoder.PasswordEncoderWrapper;
 import com.valpuestajorge.conecta4.security.exception.InvalidLoginException;
@@ -9,7 +8,7 @@ import com.valpuestajorge.conecta4.security.model.ChangePasswordDto;
 import com.valpuestajorge.conecta4.security.model.LoginOutputDto;
 import com.valpuestajorge.conecta4.security.service.ISecurityService;
 import com.valpuestajorge.conecta4.security.service.PasswordGenerator;
-import com.valpuestajorge.conecta4.user.business.AppUser;
+import com.valpuestajorge.conecta4.user.entity.business.AppUser;
 import com.valpuestajorge.conecta4.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;

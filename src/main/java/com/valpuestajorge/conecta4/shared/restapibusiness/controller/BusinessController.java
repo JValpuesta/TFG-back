@@ -5,7 +5,7 @@ import com.valpuestajorge.conecta4.shared.restapibusiness.dto.in.BusinessInputDt
 import com.valpuestajorge.conecta4.shared.restapibusiness.dto.in.BusinessInputDtoMapper;
 import com.valpuestajorge.conecta4.shared.restapibusiness.dto.out.BusinessOutputDto;
 import com.valpuestajorge.conecta4.shared.restapibusiness.dto.out.BusinessOutputDtoMapper;
-import com.valpuestajorge.conecta4.shared.restapibusiness.persistance.BusinessEntity;
+import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
 import com.valpuestajorge.conecta4.shared.restapibusiness.service.BusinessServicePort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -5,7 +5,7 @@ import com.valpuestajorge.conecta4.errors.UnprocessableEntityException;
 import com.valpuestajorge.conecta4.security.exception.InvalidLoginException;
 import com.valpuestajorge.conecta4.security.model.ChangePasswordDto;
 import com.valpuestajorge.conecta4.security.model.LoginOutputDto;
-import com.valpuestajorge.conecta4.user.business.AppUser;
+import com.valpuestajorge.conecta4.user.entity.business.AppUser;
 import reactor.core.publisher.Mono;
 
 public interface ISecurityService {

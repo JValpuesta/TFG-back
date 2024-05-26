@@ -1,7 +1,7 @@
 package com.valpuestajorge.conecta4.user.controller;
 
 import com.valpuestajorge.conecta4.shared.restapibusiness.controller.BusinessController;
-import com.valpuestajorge.conecta4.user.business.AppUser;
+import com.valpuestajorge.conecta4.user.entity.business.AppUser;
 import com.valpuestajorge.conecta4.user.dto.AppUserInputDto;
 import com.valpuestajorge.conecta4.user.dto.AppUserOutputDtoMapper;
 import com.valpuestajorge.conecta4.user.dto.AppUserInputDtoMapper;

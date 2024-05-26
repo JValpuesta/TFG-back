@@ -2,7 +2,7 @@ package com.valpuestajorge.conecta4.user.repository;
 
 import com.valpuestajorge.conecta4.errors.NotFoundException;
 import com.valpuestajorge.conecta4.shared.restapibusiness.repository.BusinessReactiveRepository;
-import com.valpuestajorge.conecta4.user.business.AppUser;
+import com.valpuestajorge.conecta4.user.entity.business.AppUser;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 

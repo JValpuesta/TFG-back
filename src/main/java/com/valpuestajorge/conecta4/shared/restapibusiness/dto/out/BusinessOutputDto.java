@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public abstract class BusinessOutputDto {
     private Long id;
+    private String origin;
 }

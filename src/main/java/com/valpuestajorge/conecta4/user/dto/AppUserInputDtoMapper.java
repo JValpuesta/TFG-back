@@ -1,7 +1,7 @@
 package com.valpuestajorge.conecta4.user.dto;
 
 import com.valpuestajorge.conecta4.shared.restapibusiness.dto.in.BusinessInputDtoMapper;
-import com.valpuestajorge.conecta4.user.business.AppUser;
+import com.valpuestajorge.conecta4.user.entity.business.AppUser;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring",

@@ -2,7 +2,7 @@ package com.valpuestajorge.conecta4.shared.restapibusiness.service;
 
 import com.valpuestajorge.conecta4.errors.NotFoundException;
 import com.valpuestajorge.conecta4.errors.UnprocessableEntityException;
-import com.valpuestajorge.conecta4.shared.restapibusiness.persistance.BusinessEntity;
+import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Mono;

@@ -6,7 +6,7 @@ import com.valpuestajorge.conecta4.security.model.ChangePasswordDto;
 import com.valpuestajorge.conecta4.security.model.LoginDto;
 import com.valpuestajorge.conecta4.security.model.LoginOutputDto;
 import com.valpuestajorge.conecta4.security.service.ISecurityService;
-import com.valpuestajorge.conecta4.user.business.AppUser;
+import com.valpuestajorge.conecta4.user.entity.business.AppUser;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;

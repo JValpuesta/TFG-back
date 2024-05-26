@@ -32,11 +32,4 @@ public class Movimiento {
         this.ipCliente = ipCliente;
 
     }
-
-    public Movimiento(Integer idTablero, Integer columna){
-
-        this.idTablero = idTablero;
-        this.columna = columna;
-
-    }
 }
