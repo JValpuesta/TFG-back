@@ -40,9 +40,9 @@ public class CreateSuperAdmin {
         user.setPassword(PASSWORD);
         user.setEmail(EMAIL);
         user.setUserRole(UserRolesEnum.ADMIN);
-        user.setAccountNotLocked(true);
-        user.setAccountNotExpired(true);
-        user.setCredentialNotExpired(true);
+        user.setIsAccountNonLocked(true);
+        user.setIsAccountNonExpired(true);
+        user.setIsCredentialsNonExpired(true);
         user.setTemporaryPassword("");
         user.setConfigurations("");
         user.setRequiredPasswordChangeFlag(false);

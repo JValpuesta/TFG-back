@@ -1,8 +1,17 @@
 package com.valpuestajorge.conecta4.security.model;
 
-import org.springframework.http.HttpStatusCode;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.http.HttpStatus;
 
-public record LoginOutputDto(String access_token, String expires_in, String refresh_token, String refresh_expires_in,
-                             String configurations, HttpStatusCode status, String message) {
-
+@Data
+@AllArgsConstructor
+public class LoginOutputDto {
+    private String token;
+    private String expirationTime;
+    private String refreshToken;
+    private String refreshTime;
+    private String type;
+    private HttpStatus status;
+    private String message;
 }

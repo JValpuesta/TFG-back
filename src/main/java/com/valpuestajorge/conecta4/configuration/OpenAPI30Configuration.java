@@ -1,5 +1,6 @@
 package com.valpuestajorge.conecta4.configuration;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -9,11 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 
-@Slf4j
 @SecurityScheme(
         name = "Bearer Authentication",
+        description = "Token Access for Conecta 4 application.",
         type = SecuritySchemeType.HTTP,
+        paramName = HttpHeaders.AUTHORIZATION,
+        in = SecuritySchemeIn.HEADER,
         bearerFormat = "JWT",
         scheme = "bearer"
 )

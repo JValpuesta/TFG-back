@@ -6,9 +6,13 @@ import com.valpuestajorge.conecta4.security.exception.InvalidLoginException;
 import com.valpuestajorge.conecta4.security.model.ChangePasswordDto;
 import com.valpuestajorge.conecta4.security.model.LoginOutputDto;
 import com.valpuestajorge.conecta4.user.entity.business.AppUser;
+import org.springframework.security.access.prepost.PreAuthorize;
 import reactor.core.publisher.Mono;
 
 public interface ISecurityService {
+
+    @PreAuthorize("hasRole('ADMIN')")
+    Mono<String> greet();
 
     Mono<AppUser> searchUserByUsername(String username);
     Mono<LoginOutputDto> login(String username, String password) throws NotFoundException, UnprocessableEntityException;

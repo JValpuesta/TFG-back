@@ -32,19 +32,17 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
         String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(Objects.nonNull(jwtToken)){
+        if (Objects.nonNull(jwtToken) && jwtToken.startsWith(PREFIX)) {
             jwtToken = jwtToken.substring(PREFIX.length());
             DecodedJWT decodedJWT = jwtUtils.verifyToken(jwtToken);
             String username = jwtUtils.extractUsername(decodedJWT);
             String stringAuthorities = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asString();
             Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(stringAuthorities);
-            SecurityContext context = SecurityContextHolder.getContext();
             Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            SecurityContext context = SecurityContextHolder.getContext();
             context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
         }
 
         filterChain.doFilter(request, response);
-
     }
 }

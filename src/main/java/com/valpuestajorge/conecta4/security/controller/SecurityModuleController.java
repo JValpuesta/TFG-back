@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
+
 @RestController
 @Tag(name = "Security", description = "AppUser management operations")
 @RequestMapping("/security/user")
@@ -26,19 +28,6 @@ public class SecurityModuleController {
     private final ISecurityService securityService;
     //private final AppUserOutputDtoMapper outputMapper;
     //private final AppUserInputDtoMapper inputMapper;
-
-    @PostMapping("/login")
-    public Mono<ResponseEntity<LoginOutputDto>> login(@RequestBody LoginDto loginDto) {
-        return securityService.login(loginDto.username(), loginDto.password())
-                .map(result -> {
-                    HttpStatus status = (HttpStatus) result.status();
-                    if (status == HttpStatus.OK) {
-                        return ResponseEntity.ok(result);
-                    } else {
-                        return ResponseEntity.status(status).body(result);
-                    }
-                });
-    }
 
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{username}")

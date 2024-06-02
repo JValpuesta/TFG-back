@@ -1,12 +1,12 @@
 package com.valpuestajorge.conecta4.security.jwt.service;
 
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-
 import com.valpuestajorge.conecta4.security.jwt.service.exception.LoginException;
 import com.valpuestajorge.conecta4.security.model.LoginOutputDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-import com.auth0.jwt.JWT;
+
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 
 @Component
 public class JWTUtils {
@@ -40,8 +39,7 @@ public class JWTUtils {
     @Autowired
     private MessageSource messageSource;
 
-
-    public LoginOutputDto getToken(Authentication authentication){
+    public LoginOutputDto getToken(Authentication authentication) {
         try {
             Algorithm algorithm = getAlgorithm();
             String username = authentication.getPrincipal().toString();
@@ -56,17 +54,17 @@ public class JWTUtils {
                     .withSubject(username)
                     .withClaim("authorities", authorities)
                     .withIssuedAt(current)
-                    .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
+                    .withExpiresAt(new Date(current.getTime() + expirationTime))
                     .withJWTId(UUID.randomUUID().toString())
-                    .withNotBefore(new Date())
+                    .withNotBefore(current)
                     .sign(algorithm);
-            String refreshToken = "TODO";
+            String refreshToken = "TODO"; // Debes implementar el token de refresco
             Locale locale = LocaleContextHolder.getLocale();
             String message = messageSource.getMessage("user.successfulLogin.message", null, locale);
-            return new LoginOutputDto(token,expirationLimit,refreshToken, refreshLimit,"", HttpStatus.OK, message );
+            return new LoginOutputDto(token, expirationLimit, refreshToken, refreshLimit, "", HttpStatus.OK, message);
 
-        } catch (JWTCreationException exception){
-           return null;
+        } catch (JWTCreationException exception) {
+            return null;
         }
     }
 
@@ -75,27 +73,28 @@ public class JWTUtils {
     }
 
     public DecodedJWT verifyToken(String token) throws LoginException {
-        try{
+        try {
             Algorithm algorithm = getAlgorithm();
             JWTVerifier jwtVerifier = JWT.require(algorithm)
                     .withIssuer(userGenerator)
                     .build();
             return jwtVerifier.verify(token);
-        }
-        catch (JWTVerificationException jwtVerificationException){
+        } catch (JWTVerificationException jwtVerificationException) {
             Locale locale = LocaleContextHolder.getLocale();
             String message = messageSource.getMessage("exception.unauthorizedException", null, locale);
             throw new LoginException(message);
         }
     }
 
-    public String extractUsername(DecodedJWT token){
+    public String extractUsername(DecodedJWT token) {
         return token.getSubject();
     }
-    public Claim getSpecificClaim(DecodedJWT token, String key){
+
+    public Claim getSpecificClaim(DecodedJWT token, String key) {
         return token.getClaim(key);
     }
-    public Map<String, Claim> getAllClaims(DecodedJWT token){
+
+    public Map<String, Claim> getAllClaims(DecodedJWT token) {
         return token.getClaims();
     }
 }

@@ -1,17 +1,19 @@
 package com.valpuestajorge.conecta4.user.entity.business;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
 import com.valpuestajorge.conecta4.shared.util.NationalityEnum;
 import com.valpuestajorge.conecta4.shared.util.UserRolesEnum;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 @Table(name = "app_user")
 @Getter
@@ -19,7 +21,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-public class AppUser extends BusinessEntity {
+@Builder
+public class AppUser extends BusinessEntity implements UserDetails {
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
@@ -27,6 +30,7 @@ public class AppUser extends BusinessEntity {
     private String username;
     @Column(name = "login", nullable = false)
     private String login;
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "last_login")
@@ -37,12 +41,12 @@ public class AppUser extends BusinessEntity {
     private Boolean userAvailableFlag;
     @Column(name = "required_password_change_flag")
     private Boolean requiredPasswordChangeFlag;
-    @Column(name = "account_not_locked")
-    private Boolean accountNotLocked;
-    @Column(name = "account_not_expired")
-    private Boolean accountNotExpired;
-    @Column(name = "credential_not_expired")
-    private Boolean credentialNotExpired;
+    @Column(name = "account_non_locked")
+    private Boolean isAccountNonLocked;
+    @Column(name = "account_non_expired")
+    private Boolean isAccountNonExpired;
+    @Column(name = "credential_non_expired")
+    private Boolean isCredentialsNonExpired;
     @Column(name = "temporary_password")
     private String temporaryPassword;
     @Column(name = "configurations")
@@ -53,4 +57,29 @@ public class AppUser extends BusinessEntity {
     private UserRolesEnum userRole;
     @Column(name = "nationality")
     private NationalityEnum nationality;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return isAccountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return isAccountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return isCredentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isCredentialsNonExpired && isAccountNonLocked && isAccountNonExpired;
+    }
 }

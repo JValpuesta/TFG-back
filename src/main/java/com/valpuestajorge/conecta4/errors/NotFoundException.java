@@ -1,5 +1,6 @@
 package com.valpuestajorge.conecta4.errors;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class NotFoundException extends RuntimeException{
@@ -7,7 +8,7 @@ public class NotFoundException extends RuntimeException{
 
     public NotFoundException(String message) {
         super(message);
-        error = new CustomError(new Date(), 404, message);
+        error = new CustomError(LocalDateTime.now(), 404, message);
     }
 
     public CustomError getError() {

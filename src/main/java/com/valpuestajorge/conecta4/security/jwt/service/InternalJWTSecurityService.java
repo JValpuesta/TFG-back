@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,8 +35,13 @@ public class InternalJWTSecurityService implements ISecurityService {
     private final PasswordEncoderWrapper passwordEncoder;
     //private final EmailService emailService;
     //private final SatParameterRepositoryPort parameterPort;
-
     //private static final Long ID_MAIL_RANDOM_PASSWORD_PARAMETER = 1L;
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public Mono<String> greet() {
+        return Mono.just("Hello from service!");
+    }
 
     @Override
     public Mono<AppUser> searchUserByUsername(String username) {
@@ -62,13 +68,13 @@ public class InternalJWTSecurityService implements ISecurityService {
                     if (Objects.isNull(appUser)) {
                         return Mono.empty();
                     }
-                    if (Boolean.FALSE.equals(appUser.getAccountNotLocked())) {
+                    if (Boolean.FALSE.equals(appUser.getIsAccountNonLocked())) {
                         return createAndLogFailure(appUser, "user.lockedAccount.message");
                     }
-                    if (Boolean.FALSE.equals(appUser.getAccountNotExpired())) {
+                    if (Boolean.FALSE.equals(appUser.getIsAccountNonExpired())) {
                         return createAndLogFailure(appUser, "user.expiredAccount.message");
                     }
-                    if (Boolean.FALSE.equals(appUser.getCredentialNotExpired())) {
+                    if (Boolean.FALSE.equals(appUser.getIsCredentialsNonExpired())) {
                         return createAndLogFailure(appUser, "user.expiredCredential.message");
                     }
                     if (Boolean.TRUE.equals(appUser.getRequiredPasswordChangeFlag())) {
@@ -174,7 +180,7 @@ public class InternalJWTSecurityService implements ISecurityService {
                         String message = messageSource.getMessage("user.notFound.login.message", null, locale);
                         return Mono.error(new NotFoundException(message));
                     }
-                    user.setAccountNotLocked(isAvailable);
+                    user.setIsAccountNonLocked(isAvailable);
                     return userRepository.save(user).then();
                 });
     }

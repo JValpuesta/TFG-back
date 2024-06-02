@@ -10,7 +10,10 @@ import reactor.core.publisher.Mono;
 public interface UserRepository extends BusinessReactiveRepository<AppUser> {
 
     Mono<AppUser> findUserByLogin(String login) throws NotFoundException;
+
     Mono<AppUser> findUserByUsername(String login) throws NotFoundException;
+
     Boolean existsByLogin(String login);
 
+    Mono<AppUser> findByUsername(String username);
 }
