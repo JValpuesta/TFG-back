@@ -7,7 +7,7 @@ import com.valpuestajorge.conecta4.reactive_security.dto.TokenDto;
 import com.valpuestajorge.conecta4.reactive_security.jwt.JwtProvider;
 import com.valpuestajorge.conecta4.reactive_security.repository.UserRepository;
 import com.valpuestajorge.conecta4.shared.util.UserRolesEnum;
-import com.valpuestajorge.conecta4.user.entity.business.AppUser;
+import com.valpuestajorge.conecta4.reactive_security.entity.AppUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

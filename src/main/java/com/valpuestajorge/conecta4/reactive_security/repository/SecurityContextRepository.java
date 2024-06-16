@@ -1,4 +1,4 @@
-package com.valpuestajorge.conecta4.reactive_security.jwt.repository;
+package com.valpuestajorge.conecta4.reactive_security.repository;
 
 import com.valpuestajorge.conecta4.reactive_security.jwt.JwtAuthenticationManager;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.valpuestajorge.conecta4.reactive_security.repository;
 
-import com.valpuestajorge.conecta4.user.entity.business.AppUser;
+import com.valpuestajorge.conecta4.reactive_security.entity.AppUser;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;

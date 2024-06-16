@@ -1,4 +1,4 @@
-package com.valpuestajorge.conecta4.user.entity.business;
+package com.valpuestajorge.conecta4.reactive_security.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
@@ -8,11 +8,11 @@ import lombok.*;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Table(name = "app_user")
@@ -60,7 +60,8 @@ public class AppUser extends BusinessEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Stream.of(userRole.getDescription()).map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override

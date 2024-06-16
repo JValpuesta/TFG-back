@@ -4,7 +4,7 @@ import com.valpuestajorge.conecta4.reactive_security.dto.CreateUserDto;
 import com.valpuestajorge.conecta4.reactive_security.dto.LoginDto;
 import com.valpuestajorge.conecta4.reactive_security.dto.TokenDto;
 import com.valpuestajorge.conecta4.reactive_security.service.UserService;
-import com.valpuestajorge.conecta4.user.entity.business.AppUser;
+import com.valpuestajorge.conecta4.reactive_security.entity.AppUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class AuthHandler {
 
     private final UserService userService;
+
     public Mono<ServerResponse> login(ServerRequest request){
         Mono<LoginDto> dtoMono = request.bodyToMono(LoginDto.class);
         return dtoMono

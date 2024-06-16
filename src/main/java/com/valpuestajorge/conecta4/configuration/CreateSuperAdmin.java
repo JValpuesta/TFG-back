@@ -1,16 +1,9 @@
 package com.valpuestajorge.conecta4.configuration;
 
-import com.valpuestajorge.conecta4.shared.util.UserRolesEnum;
-import com.valpuestajorge.conecta4.user.entity.business.AppUser;
-import com.valpuestajorge.conecta4.user.repository.UserRepository;
-import com.valpuestajorge.conecta4.user.service.UserService;
-import jakarta.annotation.PostConstruct;
+import com.valpuestajorge.conecta4.reactive_security.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
-
-import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -22,9 +15,9 @@ public class CreateSuperAdmin {
 
     private final UserService userService;
 
-    @PostConstruct
+    /*@PostConstruct
     public void createSuperAdminUser() {
-        userService.getByLogin(SUPER_ADMIN)
+        userService.login(SUPER_ADMIN)
                 .switchIfEmpty(createAdminUser())
                 .subscribe(
                         user -> log.info("Super admin user exists or has been created successfully: {}", user),
@@ -47,5 +40,5 @@ public class CreateSuperAdmin {
         user.setConfigurations("");
         user.setRequiredPasswordChangeFlag(false);
         return userService.post(user);
-    }
+    }*/
 }

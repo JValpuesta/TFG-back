@@ -2,6 +2,7 @@ package com.valpuestajorge.conecta4.reactive_security.jwt;
 
 import com.valpuestajorge.conecta4.errors.CustomError;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;

@@ -61,10 +61,10 @@ public class OpenAPI30Configuration {
     }
 
     @Bean
-    public GroupedOpenApi security() {
+    public GroupedOpenApi reactive_security() {
         return GroupedOpenApi.builder()
                 .group("Security")
-                .packagesToScan("com.valpuestajorge.conecta4.security")
+                .packagesToScan("com.valpuestajorge.conecta4.reactive_security")
                 .build();
     }
 
