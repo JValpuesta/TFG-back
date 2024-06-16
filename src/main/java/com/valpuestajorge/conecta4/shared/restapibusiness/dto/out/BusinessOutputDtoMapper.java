@@ -1,12 +1,12 @@
 package com.valpuestajorge.conecta4.shared.restapibusiness.dto.out;
 
 import com.valpuestajorge.conecta4.shared.generic_mappers.GenericOutputMapper;
-import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
+import com.valpuestajorge.conecta4.shared.restapibusiness.entity.business.Business;
 
 import java.util.List;
 import java.util.Objects;
 
-public abstract class BusinessOutputDtoMapper<B extends BusinessEntity, O extends BusinessOutputDto>
+public abstract class BusinessOutputDtoMapper<B extends Business, O extends BusinessOutputDto>
         implements GenericOutputMapper<B, O> {
 
     public Long getId(B business) {

@@ -1,4 +1,4 @@
-package com.valpuestajorge.conecta4.reactive_security.entity;
+package com.valpuestajorge.conecta4.app_user.entity.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
@@ -6,14 +6,10 @@ import com.valpuestajorge.conecta4.shared.util.NationalityEnum;
 import com.valpuestajorge.conecta4.shared.util.UserRolesEnum;
 import lombok.*;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Table(name = "app_user")
 @Getter
@@ -22,7 +18,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @MappedSuperclass
 @Builder
-public class AppUser extends BusinessEntity implements UserDetails {
+public class AppUserEntity extends BusinessEntity {
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
@@ -57,30 +53,4 @@ public class AppUser extends BusinessEntity implements UserDetails {
     private UserRolesEnum userRole;
     @Column(name = "nationality")
     private NationalityEnum nationality;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Stream.of(userRole.getDescription()).map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return isAccountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return isAccountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return isCredentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isCredentialsNonExpired && isAccountNonLocked && isAccountNonExpired;
-    }
 }

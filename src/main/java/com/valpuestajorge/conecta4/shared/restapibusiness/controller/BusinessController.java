@@ -5,7 +5,7 @@ import com.valpuestajorge.conecta4.shared.restapibusiness.dto.in.BusinessInputDt
 import com.valpuestajorge.conecta4.shared.restapibusiness.dto.in.BusinessInputDtoMapper;
 import com.valpuestajorge.conecta4.shared.restapibusiness.dto.out.BusinessOutputDto;
 import com.valpuestajorge.conecta4.shared.restapibusiness.dto.out.BusinessOutputDtoMapper;
-import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
+import com.valpuestajorge.conecta4.shared.restapibusiness.entity.business.Business;
 import com.valpuestajorge.conecta4.shared.restapibusiness.service.BusinessServicePort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +29,7 @@ import java.util.Map;
 @SecurityRequirement(name = "Bearer Authentication")
 @RequestMapping("/v1")
 @CrossOrigin("*")
-public abstract class BusinessController<B extends BusinessEntity, O extends BusinessOutputDto,
+public abstract class BusinessController<B extends Business, O extends BusinessOutputDto,
         I extends BusinessInputDto> {
     protected abstract BusinessServicePort<B> getService();
 
