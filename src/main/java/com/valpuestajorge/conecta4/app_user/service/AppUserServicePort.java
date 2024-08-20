@@ -1,10 +1,11 @@
 package com.valpuestajorge.conecta4.app_user.service;
 
-import com.valpuestajorge.conecta4.app_user.entity.business.AppUser;
-import com.valpuestajorge.conecta4.shared.restapibusiness.service.BusinessServicePort;
+import com.valpuestajorge.conecta4.app_user.domain.AppUser;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-public interface AppUserServicePort extends BusinessServicePort<AppUser> {
+@Service
+public interface AppUserServicePort {
 
     Mono<AppUser> findByUsernameOrEmail(String username, String email);
 }

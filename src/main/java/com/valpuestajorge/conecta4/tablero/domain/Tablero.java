@@ -1,10 +1,15 @@
-package com.valpuestajorge.conecta4.tablero.business;
+package com.valpuestajorge.conecta4.tablero.domain;
 
-import lombok.*;
+import com.valpuestajorge.conecta4.app_user.domain.AppUser;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
+import javax.persistence.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,35 +18,26 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Tablero {
-
     @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idTablero;
-    @Column
-    private String nombreJugador1;
-    @Column
-    private String ipCliente1;
-    @Column
-    private String nombreJugador2;
-    @Column
-    private String ipCliente2;
+    @Column(name = "jugador1", nullable = false)
+    private AppUser user1;
+    @Column(name = "jugador2")
+    private AppUser user2;
     @Column
     private int[][] posicion = new int[6][7]; //0 -> casilla vacía; 1 -> ficha amarilla; 2 -> ficha roja
     @Column
     private List<Integer> historial = new ArrayList<>();
-    @Column
+    @Column(name = "turno", nullable = false)
     private Integer turno;
-    @Column
-    private String ganador = ""; //empty -> partida sin acabar; nombreJugador que ha ganado o empate
+    @Column(name = "ganador")
+    private AppUser ganador;
 
-    public Tablero(String nombre, String ip) {
-
-        this.nombreJugador1 = nombre;
-        this.ipCliente1 = ip;
-        this.nombreJugador2 = "";
-        this.ipCliente2 = "";
+    public Tablero(AppUser appUser) {
+        this.user1 = appUser;
         this.turno = 0;
-        this.ganador = "";
-
     }
 
     public void anyadirFicha(int columna) { //los casos de columnaNoValida y columnaLlena se controlan en el front
@@ -60,9 +56,9 @@ public class Tablero {
         }
         if(this.checkConnect4()){
             if(this.turno%2==0){
-                this.ganador = getNombreJugador1();
+                this.ganador = getUser1();
             } else {
-                this.ganador = getNombreJugador2();
+                this.ganador = getUser2();
             }
         }else {
             this.turno = getTurno() + 1;
@@ -75,7 +71,7 @@ public class Tablero {
 
     public boolean checkConnect4() {
         if(this.getTurno()==this.posicion.length*this.posicion[0].length){
-            setGanador("Empate");
+            setGanador(null);
             return true;
         }
         int turno = (this.getTurno()%2==0) ? 1 : 2;

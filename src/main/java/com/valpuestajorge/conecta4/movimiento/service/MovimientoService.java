@@ -1,7 +1,7 @@
 package com.valpuestajorge.conecta4.movimiento.service;
 
 import com.valpuestajorge.conecta4.movimiento.business.Movimiento;
-import com.valpuestajorge.conecta4.tablero.business.Tablero;
+import com.valpuestajorge.conecta4.tablero.domain.Tablero;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

@@ -1,25 +1,30 @@
-package com.valpuestajorge.conecta4.app_user.entity.persistence;
+package com.valpuestajorge.conecta4.app_user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.valpuestajorge.conecta4.shared.restapibusiness.entity.persistence.BusinessEntity;
 import com.valpuestajorge.conecta4.shared.util.NationalityEnum;
 import com.valpuestajorge.conecta4.shared.util.UserRolesEnum;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Table(name = "app_user")
-@Getter
-@Setter
+@Table
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@MappedSuperclass
-@Builder
-public class AppUserEntity extends BusinessEntity {
-
+public class AppUser {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
     @Column(name = "username", nullable = false)
@@ -53,4 +58,5 @@ public class AppUserEntity extends BusinessEntity {
     private UserRolesEnum userRole;
     @Column(name = "nationality")
     private NationalityEnum nationality;
+
 }

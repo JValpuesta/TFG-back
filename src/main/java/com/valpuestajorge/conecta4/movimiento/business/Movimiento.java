@@ -1,9 +1,14 @@
 package com.valpuestajorge.conecta4.movimiento.business;
 
+import com.valpuestajorge.conecta4.app_user.domain.AppUser;
+import com.valpuestajorge.conecta4.tablero.domain.Tablero;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.util.Date;
 
 @Table(name = "movimiento")
@@ -14,22 +19,26 @@ import java.util.Date;
 public class Movimiento {
 
     @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idMovimiento;
-    private Integer idTablero;
+    @Column(name = "tablero")
+    private Tablero tablero;
+    @Column(name = "num_jugada")
     private Integer numJugada;
-    private String nombreJugador;
+    @Column(name = "jugador")
+    private AppUser jugador;
+    @Column(name = "fecha_hora")
     private Date fechaHora;
+    @Column(name = "columna")
     private Integer columna;
-    private String ipCliente;
 
-    public Movimiento(Integer idTablero, Integer numJugada, String nombreJugador, Date fechaHora, Integer columna, String ipCliente){
+    public Movimiento(Tablero tablero, Integer numJugada, AppUser jugador, Date fechaHora, Integer columna){
 
-        this.idTablero = idTablero;
+        this.tablero = tablero;
         this.numJugada = numJugada;
-        this.nombreJugador = nombreJugador;
+        this.jugador = jugador;
         this.fechaHora = fechaHora;
         this.columna = columna;
-        this.ipCliente = ipCliente;
-
     }
 }

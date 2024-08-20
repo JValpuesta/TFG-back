@@ -1,11 +1,12 @@
 package com.valpuestajorge.conecta4.tablero.controller;
 
+import com.valpuestajorge.conecta4.app_user.domain.AppUser;
 import com.valpuestajorge.conecta4.historial.service.HistorialService;
 import com.valpuestajorge.conecta4.movimiento.service.MovimientoService;
 import com.valpuestajorge.conecta4.tablero.service.TableroService;
 import com.valpuestajorge.conecta4.historial.business.Historial;
 import com.valpuestajorge.conecta4.movimiento.business.Movimiento;
-import com.valpuestajorge.conecta4.tablero.business.Tablero;
+import com.valpuestajorge.conecta4.tablero.domain.Tablero;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.Objects;
 
 @RestController
 @Tag(name = "Tablero", description = "Tablero operations")
-@RequestMapping("/partida")
+@RequestMapping("/v1/partida")
 @SecurityRequirement(name = "Bearer Authentication")
 public class TableroController {
 
@@ -62,8 +63,8 @@ public class TableroController {
     }
 
     @PostMapping
-    public Mono<Tablero> addTablero(@RequestParam String nombre, @RequestParam String ip){
-        return tableroService.addTablero(nombre, ip);
+    public Mono<Tablero> addTablero(@RequestParam AppUser user){
+        return tableroService.addTablero(user);
     }
 
     @DeleteMapping("/{id}")
@@ -72,9 +73,9 @@ public class TableroController {
     }
 
     @PutMapping("/{id}")
-    public Mono<Tablero> addJugador2Tablero(@PathVariable int id, @RequestParam String nombre2, @RequestParam String ip2) {
+    public Mono<Tablero> addJugador2Tablero(@PathVariable int id, @RequestParam AppUser user) {
         simpMessagingTemplate.convertAndSend("/topic/tablero/" + id, "Jugador 2 se ha conectado");
-        return tableroService.addJugador2Tablero(id, nombre2, ip2);
+        return tableroService.addJugador2Tablero(id, user);
     }
 
     @PutMapping("/conecta4/{id}")
@@ -84,9 +85,9 @@ public class TableroController {
         tableroService.addMovimientoToHistorial(id, Objects.requireNonNull(movimiento).getIdMovimiento()).block();
 
         return tableroService.addFichaTablero(id, columna).map((t)->{
-            if(!t.getGanador().isEmpty()){
-                historialService.addPartidaHistorialByIp(t.getIpCliente1(), id).subscribe();
-                historialService.addPartidaHistorialByIp(t.getIpCliente2(), id).subscribe();
+            if(!Objects.nonNull(t.getGanador())){
+                historialService.addPartidaHistorialByIp(t.getUser1().getIp(), id).subscribe();
+                historialService.addPartidaHistorialByIp(t.getUser2().getIp(), id).subscribe();
             }
             if(idJugador == 1){
                 simpMessagingTemplate.convertAndSend("/topic/tablero/" + id + "/" + 2, Objects.requireNonNull(t));

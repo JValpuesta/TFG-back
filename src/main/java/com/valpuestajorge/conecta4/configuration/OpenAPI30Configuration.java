@@ -58,7 +58,7 @@ public class OpenAPI30Configuration {
     public GroupedOpenApi user() {
         return GroupedOpenApi.builder()
                 .group("User")
-                .packagesToScan("com.valpuestajorge.conecta4.user")
+                .packagesToScan("com.valpuestajorge.conecta4.app_user")
                 .build();
     }
 }
