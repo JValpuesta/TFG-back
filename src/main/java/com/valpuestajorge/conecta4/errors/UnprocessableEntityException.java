@@ -1,5 +1,6 @@
 package com.valpuestajorge.conecta4.errors;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UnprocessableEntityException extends RuntimeException {
@@ -7,7 +8,7 @@ public class UnprocessableEntityException extends RuntimeException {
 
     public UnprocessableEntityException(String message) {
         super(message);
-        error = new CustomError(new Date(), 422, message);
+        error = new CustomError(LocalDateTime.now(), 422, message);
     }
 
     public CustomError getError() {

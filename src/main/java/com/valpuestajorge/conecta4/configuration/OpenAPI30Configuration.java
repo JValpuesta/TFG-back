@@ -1,22 +1,12 @@
 package com.valpuestajorge.conecta4.configuration;
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Slf4j
-@SecurityScheme(
-        name = "Bearer Authentication",
-        type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT",
-        scheme = "bearer"
-)
 @Configuration
 public class OpenAPI30Configuration {
 
@@ -57,10 +47,18 @@ public class OpenAPI30Configuration {
     }
 
     @Bean
-    public GroupedOpenApi security() {
+    public GroupedOpenApi reactive_security() {
         return GroupedOpenApi.builder()
                 .group("Security")
-                .packagesToScan("com.valpuestajorge.conecta4.security")
+                .packagesToScan("com.valpuestajorge.conecta4.reactive_security")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi user() {
+        return GroupedOpenApi.builder()
+                .group("User")
+                .packagesToScan("com.valpuestajorge.conecta4.app_user")
                 .build();
     }
 }
