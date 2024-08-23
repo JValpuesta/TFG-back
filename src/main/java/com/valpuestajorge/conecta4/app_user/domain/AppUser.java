@@ -2,23 +2,29 @@ package com.valpuestajorge.conecta4.app_user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.valpuestajorge.conecta4.shared.util.NationalityEnum;
-import com.valpuestajorge.conecta4.shared.util.UserRolesEnum;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Table;
-
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUser {
+@Builder
+public class AppUser implements UserDetails {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,8 +61,47 @@ public class AppUser {
     @Column(name = "motive_failed_login")
     private String motiveFailedLogin;
     @Column(name = "user_role", nullable = false)
-    private UserRolesEnum userRole;
+    private String roles;
     @Column(name = "nationality")
     private NationalityEnum nationality;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Stream.of(roles.split(", ")).map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }

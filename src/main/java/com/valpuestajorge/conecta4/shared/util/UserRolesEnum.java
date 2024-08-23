@@ -1,9 +1,9 @@
 package com.valpuestajorge.conecta4.shared.util;
 
 public enum UserRolesEnum {
-    ADMIN("admin"),
-    LOGIN("login"),
-    INVITED("invited");
+    ROLE_ADMIN("admin"),
+    ROLE_USER("user"),
+    ROLE_INVITED("invited");
 
     private final String description;
 
