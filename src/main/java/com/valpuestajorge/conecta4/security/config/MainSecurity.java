@@ -22,7 +22,7 @@ public class MainSecurity {
         return http
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/**").permitAll()
-                        .anyExchange().authenticated()
+                        .anyExchange().permitAll()
                 )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.FIRST)
                 .securityContextRepository(securityContextRepository)
