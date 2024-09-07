@@ -1,11 +1,9 @@
 package com.valpuestajorge.conecta4.app_user.dto.in;
 
-import com.valpuestajorge.conecta4.shared.restapibusiness.dto.in.BusinessInputDto;
+import lombok.Getter;
 
-public class AppUserInputDto extends BusinessInputDto {
-
-    private String email;
+@Getter
+public class AppUserInputDto {
     private String username;
-    private String password;
-
+    private String ip;
 }

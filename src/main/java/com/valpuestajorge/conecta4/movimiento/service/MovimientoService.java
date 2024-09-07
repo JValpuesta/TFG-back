@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 
 @Service
 public interface MovimientoService {
-    Mono<Movimiento> addMovimiento(Tablero tablero, int columna);
+    Mono<Movimiento> addMovimiento(Integer tablero, Integer numJugada, Long jugador, Integer columna);
 }

@@ -1,8 +1,9 @@
 package com.valpuestajorge.conecta4.tablero.service;
 
-import com.valpuestajorge.conecta4.app_user.domain.AppUser;
+import com.valpuestajorge.conecta4.app_user.repository.AppUserRepository;
 import com.valpuestajorge.conecta4.errors.NotFoundException;
 import com.valpuestajorge.conecta4.errors.UnprocessableEntityException;
+import com.valpuestajorge.conecta4.movimiento.service.MovimientoService;
 import com.valpuestajorge.conecta4.tablero.domain.Tablero;
 import com.valpuestajorge.conecta4.tablero.repository.TableroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,12 @@ import java.util.Objects;
 @Service
 public class TableroServiceImpl implements TableroService {
 
-    private final static Integer MAX_TURNOS = 42;
-
     @Autowired
     TableroRepository tableroRepository;
+    @Autowired
+    AppUserRepository appUserRepository;
+    @Autowired
+    MovimientoService movimientoService;
 
     @Override
     public Flux<Tablero> getAllTableros() {
@@ -38,8 +41,13 @@ public class TableroServiceImpl implements TableroService {
     }
 
     @Override
-    public Mono<Tablero> addTablero(AppUser appUser) {
-        return tableroRepository.save(new Tablero(appUser));
+    public Mono<Tablero> addTablero(Long userId) {
+        return appUserRepository.findById(userId)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Usuario no encontrado con el ID: " + userId)))
+                .flatMap(appUser -> {
+                    Tablero tablero = new Tablero(userId);
+                    return tableroRepository.save(tablero);
+                });
     }
 
     @Override
@@ -48,39 +56,39 @@ public class TableroServiceImpl implements TableroService {
     }
 
     @Override
-    public Mono<Tablero> addJugador2Tablero(int id, AppUser appUser) {
-        Mono<Tablero> tableroMono = tableroRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("No se ha podido encontrar la partida " + id)));
-        Mono<Tablero> tableroMono1 = tableroMono.handle((t, sink) -> {
-            if (Objects.nonNull(t.getUser2())) {
-                sink.error(new UnprocessableEntityException("La partida " + id + " ya está empezada"));
-            } else {
-                sink.next(t);
-            }
-        });
-        return tableroMono1.map((t) -> {
-            t.setUser2(appUser);
-            return t;
-        }).flatMap(t -> tableroRepository.save(t));
+    public Mono<Tablero> addJugador2Tablero(Integer id, Long userId) {
+        return tableroRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("No se ha podido encontrar la partida " + id)))
+                .flatMap(tablero -> {
+                    if (Objects.nonNull(tablero.getUser2())) {
+                        return Mono.error(new UnprocessableEntityException("La partida " + id + " ya está empezada"));
+                    } if (Objects.equals(userId, tablero.getUser1())) {
+                        return Mono.error(new UnprocessableEntityException("No puedes unirte a una partida creada por ti."));
+                    } else {
+                        tablero.setUser2(userId);
+                        return tableroRepository.save(tablero);
+                    }
+                });
     }
 
     @Override
     public Mono<Tablero> addFichaTablero(int id, int columna) {
-        Mono<Tablero> tableroMono = tableroRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("No se ha podido encontrar la partida " + id)));
-      return tableroMono.map((t) -> {
-            t.anyadirFicha(columna);
-            return t;
-        }).flatMap(t -> tableroRepository.save(t));
+        return tableroRepository.findById(id)
+                .switchIfEmpty(Mono.error(new NotFoundException("No se ha podido encontrar la partida " + id)))
+                .flatMap(tablero -> {
+                    if (Objects.nonNull(tablero.getGanador())) {
+                        return Mono.error(new UnprocessableEntityException("La partida ya ha terminado."));
+                    }
+                    Long playerInTurn;
+                    if (tablero.getTurno() % 2 == 0) {
+                        playerInTurn = tablero.getUser1();
+                    } else {
+                        playerInTurn = tablero.getUser2();
+                    }
+                    return movimientoService.addMovimiento(id, tablero.getTurno(), playerInTurn, columna)
+                            .then(tablero.anyadirFicha(columna))
+                            .flatMap(updatedTablero -> tableroRepository.save(updatedTablero));
+                });
     }
 
-    @Override
-    public Mono<Tablero> addMovimientoToHistorial(int id, int idMovimiento){
-        Mono<Tablero> tableroMono = tableroRepository.findById(id)
-                .switchIfEmpty(Mono.error(new NotFoundException("No se ha podido encontrar la partida " + id)));
-        return tableroMono.map((t) -> {
-            t.addIntToHistorial(idMovimiento);
-            return t;
-        }).flatMap(t -> tableroRepository.save(t));
-    }
 }
