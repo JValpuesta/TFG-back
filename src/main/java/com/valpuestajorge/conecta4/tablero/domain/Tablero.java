@@ -1,17 +1,13 @@
 package com.valpuestajorge.conecta4.tablero.domain;
 
-import com.valpuestajorge.conecta4.app_user.domain.AppUser;
+import com.valpuestajorge.conecta4.shared.util.ResultadoEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import javax.persistence.Column;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import java.util.ArrayList;
-import java.util.List;
+import reactor.core.publisher.Mono;
 
 @Table
 @Data
@@ -19,129 +15,130 @@ import java.util.List;
 @NoArgsConstructor
 public class Tablero {
     @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idTablero;
-    @Column(name = "jugador1", nullable = false)
-    private AppUser user1;
-    @Column(name = "jugador2")
-    private AppUser user2;
+    @Column
+    private Long user1;
+    @Column
+    private Long user2;
     @Column
     private int[][] posicion = new int[6][7]; //0 -> casilla vacía; 1 -> ficha amarilla; 2 -> ficha roja
     @Column
-    private List<Integer> historial = new ArrayList<>();
-    @Column(name = "turno", nullable = false)
     private Integer turno;
-    @Column(name = "ganador")
-    private AppUser ganador;
+    @Column
+    private String ganador;
 
-    public Tablero(AppUser appUser) {
+    public Tablero(Long appUser) {
         this.user1 = appUser;
         this.turno = 0;
     }
 
-    public void anyadirFicha(int columna) { //los casos de columnaNoValida y columnaLlena se controlan en el front
-        int fila = 0;
-        while (fila < this.posicion.length) {
-            if (posicion[fila][columna] == 0) {
-                if(this.getTurno()%2==0){
-                    posicion[fila][columna] = 1;
+    public Mono<Tablero> anyadirFicha(int columna) {
+        return Mono.fromSupplier(() -> {
+            int fila = 0;
+            while (fila < this.posicion.length) {
+                if (posicion[fila][columna] == 0) {
+                    if (this.getTurno() % 2 == 0) {
+                        posicion[fila][columna] = 1;
+                    } else {
+                        posicion[fila][columna] = 2;
+                    }
+                    fila = this.posicion.length;
                 } else {
-                    posicion[fila][columna] = 2;
+                    fila++;
                 }
-                fila = this.posicion.length;
-            } else {
-                fila++;
             }
-        }
-        if(this.checkConnect4()){
-            if(this.turno%2==0){
-                this.ganador = getUser1();
-            } else {
-                this.ganador = getUser2();
+            return this;
+        }).flatMap(this::checkConnect4).map(t -> {
+            if (t.getGanador() == null) {
+                t.setTurno(t.getTurno() + 1);
             }
-        }else {
-            this.turno = getTurno() + 1;
-        }
+            return t;
+        });
     }
 
-    public void addIntToHistorial(int idMovimiento){
-        getHistorial().add(idMovimiento);
-    }
+    // Método para verificar si hay un ganador
+    public Mono<Tablero> checkConnect4(Tablero tablero) {
+        return Mono.fromSupplier(() -> {
+            int[][] posicion = tablero.getPosicion();
+            int turno = tablero.getTurno() % 2 == 0 ? 1 : 2;
+            int rows = posicion.length;
+            int cols = posicion[0].length;
 
-    public boolean checkConnect4() {
-        if(this.getTurno()==this.posicion.length*this.posicion[0].length){
-            setGanador(null);
-            return true;
-        }
-        int turno = (this.getTurno()%2==0) ? 1 : 2;
-        int rows = this.posicion.length;
-        int cols = this.posicion[0].length;
+            // Verificar empate
+            if (tablero.getTurno() == rows * cols) {
+                tablero.setGanador(ResultadoEnum.DRAW.name());
+                return tablero;
+            }
 
-        // Verificación de filas
-        for (int[] ints : this.posicion) {
-            for (int col = 0; col < cols - 3; col++) {
-                boolean hasConnect4 = true;
-                for (int i = 0; i < 4; i++) {
-                    if (ints[col + i] != turno) {
-                        hasConnect4 = false;
-                        break;
+            // Verificación de filas
+            for (int[] row : posicion) {
+                for (int col = 0; col < cols - 3; col++) {
+                    boolean hasConnect4 = true;
+                    for (int i = 0; i < 4; i++) {
+                        if (row[col + i] != turno) {
+                            hasConnect4 = false;
+                            break;
+                        }
+                    }
+                    if (hasConnect4) {
+                        tablero.setGanador(turno == 1 ? ResultadoEnum.PLAYER_1.name() : ResultadoEnum.PLAYER_2.name());
+                        return tablero;
                     }
                 }
-                if (hasConnect4) {
-                    return true;
+            }
+
+            // Verificación de columnas
+            for (int col = 0; col < cols; col++) {
+                for (int row = 0; row < rows - 3; row++) {
+                    boolean hasConnect4 = true;
+                    for (int i = 0; i < 4; i++) {
+                        if (posicion[row + i][col] != turno) {
+                            hasConnect4 = false;
+                            break;
+                        }
+                    }
+                    if (hasConnect4) {
+                        tablero.setGanador(turno == 1 ? ResultadoEnum.PLAYER_1.name() : ResultadoEnum.PLAYER_2.name());
+                        return tablero;
+                    }
                 }
             }
-        }
 
-        // Verificación de columnas
-        for (int col = 0; col < cols; col++) {
+            // Verificación de diagonales hacia abajo y hacia la derecha
             for (int row = 0; row < rows - 3; row++) {
-                boolean hasConnect4 = true;
-                for (int i = 0; i < 4; i++) {
-                    if (this.posicion[row + i][col] != turno) {
-                        hasConnect4 = false;
-                        break;
+                for (int col = 0; col < cols - 3; col++) {
+                    boolean hasConnect4 = true;
+                    for (int i = 0; i < 4; i++) {
+                        if (posicion[row + i][col + i] != turno) {
+                            hasConnect4 = false;
+                            break;
+                        }
+                    }
+                    if (hasConnect4) {
+                        tablero.setGanador(turno == 1 ? ResultadoEnum.PLAYER_1.name() : ResultadoEnum.PLAYER_2.name());
+                        return tablero;
                     }
                 }
-                if (hasConnect4) {
-                    return true;
-                }
             }
-        }
 
-        // Verificación de diagonales hacia abajo y hacia la derecha
-        for (int row = 0; row < rows - 3; row++) {
-            for (int col = 0; col < cols - 3; col++) {
-                boolean hasConnect4 = true;
-                for (int i = 0; i < 4; i++) {
-                    if (this.posicion[row + i][col + i] != turno) {
-                        hasConnect4 = false;
-                        break;
+            // Verificación de diagonales hacia arriba y hacia la derecha
+            for (int row = 3; row < rows; row++) {
+                for (int col = 0; col < cols - 3; col++) {
+                    boolean hasConnect4 = true;
+                    for (int i = 0; i < 4; i++) {
+                        if (posicion[row - i][col + i] != turno) {
+                            hasConnect4 = false;
+                            break;
+                        }
+                    }
+                    if (hasConnect4) {
+                        tablero.setGanador(turno == 1 ? ResultadoEnum.PLAYER_1.name() : ResultadoEnum.PLAYER_2.name());
+                        return tablero;
                     }
                 }
-                if (hasConnect4) {
-                    return true;
-                }
             }
-        }
-
-        // Verificación de diagonales hacia arriba y hacia la derecha
-        for (int row = 3; row < rows; row++) {
-            for (int col = 0; col < cols - 3; col++) {
-                boolean hasConnect4 = true;
-                for (int i = 0; i < 4; i++) {
-                    if (this.posicion[row - i][col + i] != turno) {
-                        hasConnect4 = false;
-                        break;
-                    }
-                }
-                if (hasConnect4) {
-                    return true;
-                }
-            }
-        }
-        return false;
+            return tablero;
+        });
     }
 
 }

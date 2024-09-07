@@ -1,15 +1,14 @@
 package com.valpuestajorge.conecta4.movimiento.business;
 
-import com.valpuestajorge.conecta4.app_user.domain.AppUser;
-import com.valpuestajorge.conecta4.tablero.domain.Tablero;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Table(name = "movimiento")
 @Getter
@@ -17,28 +16,24 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Movimiento {
-
     @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idMovimiento;
-    @Column(name = "tablero")
-    private Tablero tablero;
-    @Column(name = "num_jugada")
+    @Column
+    private Integer tablero;
+    @Column
     private Integer numJugada;
-    @Column(name = "jugador")
-    private AppUser jugador;
-    @Column(name = "fecha_hora")
-    private Date fechaHora;
-    @Column(name = "columna")
+    @Column
+    private Long jugador;
+    @Column
+    private LocalDateTime fechaHora;
+    @Column
     private Integer columna;
 
-    public Movimiento(Tablero tablero, Integer numJugada, AppUser jugador, Date fechaHora, Integer columna){
-
+    public Movimiento(Integer tablero, Integer numJugada, Long jugador, Integer columna) {
         this.tablero = tablero;
         this.numJugada = numJugada;
         this.jugador = jugador;
-        this.fechaHora = fechaHora;
+        this.fechaHora = LocalDateTime.now();
         this.columna = columna;
     }
 }

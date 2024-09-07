@@ -31,26 +31,10 @@ public class OpenAPI30Configuration {
     }
 
     @Bean
-    public GroupedOpenApi historial() {
-        return GroupedOpenApi.builder()
-                .group("Historial")
-                .packagesToScan("com.valpuestajorge.conecta4.historial")
-                .build();
-    }
-
-    @Bean
     public GroupedOpenApi movimiento() {
         return GroupedOpenApi.builder()
                 .group("Movimiento")
                 .packagesToScan("com.valpuestajorge.conecta4.movimiento")
-                .build();
-    }
-
-    @Bean
-    public GroupedOpenApi reactive_security() {
-        return GroupedOpenApi.builder()
-                .group("Security")
-                .packagesToScan("com.valpuestajorge.conecta4.reactive_security")
                 .build();
     }
 
