@@ -1,5 +1,6 @@
 package com.valpuestajorge.conecta4.tablero.domain;
 
+import com.valpuestajorge.conecta4.errors.UnprocessableEntityException;
 import com.valpuestajorge.conecta4.shared.util.ResultadoEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,26 +35,36 @@ public class Tablero {
 
     public Mono<Tablero> anyadirFicha(int columna) {
         return Mono.fromSupplier(() -> {
-            int fila = 0;
-            while (fila < this.posicion.length) {
-                if (posicion[fila][columna] == 0) {
-                    if (this.getTurno() % 2 == 0) {
-                        posicion[fila][columna] = 1;
-                    } else {
-                        posicion[fila][columna] = 2;
+                    if (posicion[this.posicion.length - 1][columna] != 0) {
+                        throw new UnprocessableEntityException("La columna " + columna + " está llena.");
                     }
-                    fila = this.posicion.length;
-                } else {
-                    fila++;
-                }
-            }
-            return this;
-        }).flatMap(this::checkConnect4).map(t -> {
-            if (t.getGanador() == null) {
-                t.setTurno(t.getTurno() + 1);
-            }
-            return t;
-        });
+                    int fila = 0;
+                    while (fila < this.posicion.length) {
+                        if (posicion[fila][columna] == 0) {
+                            if (this.getTurno() % 2 == 0) {
+                                posicion[fila][columna] = 1;
+                            } else {
+                                posicion[fila][columna] = 2;
+                            }
+                            break;
+                        }
+                        fila++;
+                    }
+                    // Verificar empate
+                    int rows = this.posicion.length;
+                    int cols = this.posicion[0].length;
+                    if (this.getTurno() + 1 == rows * cols) {
+                        this.setGanador(ResultadoEnum.DRAW.name());
+                        return this;
+                    }
+                    return this;
+                }).flatMap(this::checkConnect4)
+                .map(tablero -> {
+                    if (tablero.getGanador() == null) {
+                        tablero.setTurno(tablero.getTurno() + 1);
+                    }
+                    return tablero;
+                });
     }
 
     // Método para verificar si hay un ganador
@@ -63,12 +74,6 @@ public class Tablero {
             int turno = tablero.getTurno() % 2 == 0 ? 1 : 2;
             int rows = posicion.length;
             int cols = posicion[0].length;
-
-            // Verificar empate
-            if (tablero.getTurno() == rows * cols) {
-                tablero.setGanador(ResultadoEnum.DRAW.name());
-                return tablero;
-            }
 
             // Verificación de filas
             for (int[] row : posicion) {

@@ -1,5 +1,6 @@
 package com.valpuestajorge.conecta4.tablero.controller;
 
+import com.valpuestajorge.conecta4.app_user.dto.in.AppUserInputDto;
 import com.valpuestajorge.conecta4.tablero.domain.Tablero;
 import com.valpuestajorge.conecta4.tablero.service.TableroService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,8 +33,8 @@ public class TableroController {
     }
 
     @PostMapping
-    public Mono<Tablero> addTablero(@RequestParam Long userId){
-        return tableroService.addTablero(userId);
+    public Mono<Tablero> addTablero(@RequestBody AppUserInputDto userInputDto){
+        return tableroService.addTablero(userInputDto.getUsername(), userInputDto.getIp());
     }
 
     @DeleteMapping("/{id}")
@@ -42,9 +43,9 @@ public class TableroController {
     }
 
     @PutMapping("/{id}")
-    public Mono<Tablero> addJugador2Tablero(@PathVariable Integer id, @RequestParam Long userId) {
+    public Mono<Tablero> addJugador2Tablero(@PathVariable Integer id, @RequestBody AppUserInputDto userInputDto) {
         simpMessagingTemplate.convertAndSend("/topic/tablero/" + id, "Jugador 2 se ha conectado");
-        return tableroService.addJugador2Tablero(id, userId);
+        return tableroService.addJugador2Tablero(id, userInputDto.getUsername(), userInputDto.getIp());
     }
 
     @PutMapping("/conecta4/{id}")
