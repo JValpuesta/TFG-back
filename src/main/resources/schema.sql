@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS "app_user" (
     "id" SERIAL PRIMARY KEY,
     "created_date" TIMESTAMP,
     "username" VARCHAR(255),
-    "ip" VARCHAR(255)
+    "ip" VARCHAR(255),
+    CONSTRAINT unique_username_ip UNIQUE (username, ip)
 );
 
 CREATE TABLE IF NOT EXISTS "tablero" (

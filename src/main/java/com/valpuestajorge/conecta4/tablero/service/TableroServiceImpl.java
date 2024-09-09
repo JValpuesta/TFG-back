@@ -81,7 +81,6 @@ public class TableroServiceImpl implements TableroService {
                 });
     }
 
-
     @Override
     public Mono<Tablero> addFichaTablero(int id, int columna) {
         return tableroRepository.findById(id)
