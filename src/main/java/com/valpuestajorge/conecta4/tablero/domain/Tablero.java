@@ -35,11 +35,11 @@ public class Tablero {
 
     public Mono<Tablero> anyadirFicha(int columna) {
         return Mono.fromSupplier(() -> {
-                    if (posicion[this.posicion.length - 1][columna] != 0) {
+                    if (posicion[0][columna] != 0) {
                         throw new UnprocessableEntityException("La columna " + columna + " está llena.");
                     }
-                    int fila = 0;
-                    while (fila < this.posicion.length) {
+                    int fila = this.posicion.length - 1;
+                    while (fila >= 0) {
                         if (posicion[fila][columna] == 0) {
                             if (this.getTurno() % 2 == 0) {
                                 posicion[fila][columna] = 1;
@@ -48,7 +48,7 @@ public class Tablero {
                             }
                             break;
                         }
-                        fila++;
+                        fila--;
                     }
                     // Verificar empate
                     int rows = this.posicion.length;
